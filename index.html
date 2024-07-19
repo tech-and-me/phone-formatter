@@ -74,15 +74,34 @@
             // Get the input value
             let input = document.getElementById("phoneNumber").value;
 
-            // Remove non-numeric characters
+            // Remove all non-numeric characters
             let cleaned = input.replace(/[^\d]/g, "");
 
-            // Format the number
-            let formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(
-               2,
-               6
-            )} ${cleaned.substring(6, 10)}`;
-            telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
+            // Determine format based on length and whether it starts with '1300'
+            let formatted;
+            if (cleaned.length === 10 && cleaned.startsWith("02")) {
+               // Handle numbers with area codes
+               formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(
+                  2,
+                  6
+               )} ${cleaned.substring(6, 10)}`;
+               telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
+            } else if (cleaned.length === 10 || cleaned.length === 11) {
+               // Handle numbers without area codes (including '1300')
+               formatted =
+                  cleaned.length === 11
+                     ? `${cleaned.substring(0, 4)} ${cleaned.substring(
+                          4,
+                          7
+                       )} ${cleaned.substring(7)}`
+                     : `${cleaned.substring(0, 4)} ${cleaned.substring(
+                          4,
+                          7
+                       )} ${cleaned.substring(7)}`;
+               telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
+            } else {
+               telLink = "Invalid phone number";
+            }
 
             // Display the result as plain text
             document.getElementById("result").textContent = telLink;
@@ -96,8 +115,7 @@
                navigator.clipboard
                   .writeText(telLink)
                   .then(() => {
-                     // alert("Copied to clipboard");
-                     console.log("Copied to clipboard");
+                     alert("Copied to clipboard");
                      // Disable the copy button
                      copyButton.disabled = true;
                   })
@@ -112,8 +130,7 @@
                textArea.select();
                try {
                   document.execCommand("copy");
-                  // alert("Copied to clipboard");
-                  console.log("Copied to clipboard");
+                  alert("Copied to clipboard");
                   // Disable the copy button
                   copyButton.disabled = true;
                } catch (err) {
@@ -139,7 +156,7 @@
       <div class="container">
          <h1>Phone Number Formatter</h1>
          <label for="phoneNumber">Enter Phone Number:</label>
-         <input type="text" id="phoneNumber" placeholder="eg-->(02) 963 405" />
+         <input type="text" id="phoneNumber" placeholder="(02) 963 405" />
          <button onclick="formatPhoneNumber()">Format</button>
          <p>Formatted Phone Number:</p>
          <div id="result"></div>
