@@ -49,6 +49,10 @@
          button:hover {
             background-color: #45a049;
          }
+         button:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+         }
          p {
             font-size: 1.2em;
          }
@@ -63,6 +67,9 @@
          }
       </style>
       <script>
+         let telLink = "";
+         let copyButton;
+
          function formatPhoneNumber() {
             // Get the input value
             let input = document.getElementById("phoneNumber").value;
@@ -75,23 +82,57 @@
                2,
                6
             )} ${cleaned.substring(6, 10)}`;
-            let telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
+            telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
 
             // Display the result as plain text
             document.getElementById("result").textContent = telLink;
+
+            // Enable the copy button
+            copyButton.disabled = false;
          }
 
          function copyToClipboard() {
-            let resultText = document.getElementById("result").textContent;
-            navigator.clipboard
-               .writeText(resultText)
-               .then(() => {
-                  alert("Copied to clipboard");
-               })
-               .catch((err) => {
-                  alert("Failed to copy: ", err);
+            if (navigator.clipboard) {
+               navigator.clipboard
+                  .writeText(telLink)
+                  .then(() => {
+                     // alert("Copied to clipboard");
+                     console.log("Copied to clipboard");
+                     // Disable the copy button
+                     copyButton.disabled = true;
+                  })
+                  .catch((err) => {
+                     alert("Failed to copy: " + err);
+                  });
+            } else {
+               // Fallback for browsers that do not support the Clipboard API
+               let textArea = document.createElement("textarea");
+               textArea.value = telLink;
+               document.body.appendChild(textArea);
+               textArea.select();
+               try {
+                  document.execCommand("copy");
+                  // alert("Copied to clipboard");
+                  console.log("Copied to clipboard");
+                  // Disable the copy button
+                  copyButton.disabled = true;
+               } catch (err) {
+                  alert("Failed to copy: " + err);
+               }
+               document.body.removeChild(textArea);
+            }
+         }
+
+         function setup() {
+            copyButton = document.getElementById("copyButton");
+            document
+               .getElementById("phoneNumber")
+               .addEventListener("input", () => {
+                  copyButton.disabled = true;
                });
          }
+
+         window.onload = setup;
       </script>
    </head>
    <body>
@@ -102,7 +143,9 @@
          <button onclick="formatPhoneNumber()">Format</button>
          <p>Formatted Phone Number:</p>
          <div id="result"></div>
-         <button onclick="copyToClipboard()">Copy to Clipboard</button>
+         <button id="copyButton" onclick="copyToClipboard()" disabled>
+            Copy to Clipboard
+         </button>
       </div>
    </body>
 </html>
