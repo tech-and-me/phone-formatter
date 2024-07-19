@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Phone Number Formatter</title>
+      <style>
+         body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+         }
+         .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+         h1 {
+            margin-bottom: 20px;
+            font-size: 2em;
+         }
+         label {
+            font-size: 1.2em;
+         }
+         input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+         }
+         button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+         }
+         button:hover {
+            background-color: #45a049;
+         }
+         p {
+            font-size: 1.2em;
+         }
+         #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border: 1px solid #b2ebf2;
+            border-radius: 5px;
+            font-size: 1.2em;
+            word-wrap: break-word;
+         }
+      </style>
+      <script>
+         function formatPhoneNumber() {
+            // Get the input value
+            let input = document.getElementById("phoneNumber").value;
+
+            // Remove non-numeric characters
+            let cleaned = input.replace(/[^\d]/g, "");
+
+            // Format the number
+            let formatted = `(${cleaned.substring(0, 2)}) ${cleaned.substring(
+               2,
+               6
+            )} ${cleaned.substring(6, 10)}`;
+            let telLink = `<a href="tel:${cleaned}">${formatted}</a>`;
+
+            // Display the result as plain text
+            document.getElementById("result").textContent = telLink;
+         }
+
+         function copyToClipboard() {
+            let resultText = document.getElementById("result").textContent;
+            navigator.clipboard
+               .writeText(resultText)
+               .then(() => {
+                  alert("Copied to clipboard");
+               })
+               .catch((err) => {
+                  alert("Failed to copy: ", err);
+               });
+         }
+      </script>
+   </head>
+   <body>
+      <div class="container">
+         <h1>Phone Number Formatter</h1>
+         <label for="phoneNumber">Enter Phone Number:</label>
+         <input type="text" id="phoneNumber" placeholder="(02) 963 405" />
+         <button onclick="formatPhoneNumber()">Format</button>
+         <p>Formatted Phone Number:</p>
+         <div id="result"></div>
+         <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      </div>
+   </body>
+</html>
